@@ -1,0 +1,269 @@
+-- Script GUI para Escapa del Tsunami por Latamrots | Compatible Delta/PC
+-- Features: Eliminar Tsunamis FIX (Todo el game), Velocidad 350 (Solo Walk)
+-- By Rells Scripts | Mover libremente (draggable mejorado)
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+-- Variables
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "TsunamiGUI"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+-- Notificación
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "Tsunami GUI Cargada",
+        Text = "Presiona L para abrir | Arrastra para mover | By Rells Scripts",
+        Duration = 6
+    })
+end)
+
+-- Frame Principal (draggable)
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.fromOffset(400, 350)
+Frame.Position = UDim2.fromScale(0.35, 0.3)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
+local FrameCorner = Instance.new("UICorner")
+FrameCorner.CornerRadius = UDim.new(0, 12)
+FrameCorner.Parent = Frame
+
+-- Título
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -80, 0, 35)
+Title.Position = UDim2.new(0, 10, 0, 5)
+Title.BackgroundTransparency = 1
+Title.Text = "🌊 Escapa del Tsunami GUI"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Frame
+
+-- Subtítulo
+local Subtitle = Instance.new("TextLabel")
+Subtitle.Size = UDim2.new(1, -80, 0, 20)
+Subtitle.Position = UDim2.new(0, 10, 0, 40)
+Subtitle.BackgroundTransparency = 1
+Subtitle.Text = "By Rells Scripts"
+Subtitle.TextColor3 = Color3.fromRGB(180, 180, 180)
+Subtitle.Font = Enum.Font.GothamSemibold
+Subtitle.TextSize = 14
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.Parent = Frame
+
+-- Botón Minimizar/Maximizar
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.new(0, 30, 0, 30)
+MinBtn.Position = UDim2.new(1, -70, 0, 5)
+MinBtn.Text = "-"
+MinBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+MinBtn.TextColor3 = Color3.new(1, 1, 1)
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.TextSize = 20
+MinBtn.Parent = Frame
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 8)
+MinCorner.Parent = MinBtn
+
+local isMinimized = false
+MinBtn.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        Frame.Size = UDim2.fromOffset(400, 80)
+        MinBtn.Text = "+"
+        Content.Visible = false
+    else
+        Frame.Size = UDim2.fromOffset(400, 350)
+        MinBtn.Text = "-"
+        Content.Visible = true
+    end
+end)
+
+-- Botón Cerrar
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Position = UDim2.new(1, -35, 0, 5)
+CloseBtn.Text = "✕"
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextSize = 20
+CloseBtn.Parent = Frame
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 8)
+CloseCorner.Parent = CloseBtn
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Contenido
+local Content = Instance.new("ScrollingFrame")
+Content.Size = UDim2.new(1, -20, 1, -90)
+Content.Position = UDim2.new(0, 10, 0, 70)
+Content.BackgroundTransparency = 1
+Content.BorderSizePixel = 0
+Content.ScrollBarThickness = 6
+Content.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+Content.Parent = Frame
+Content.CanvasSize = UDim2.new(0, 0, 0, 150)
+
+-- Toggle creator
+local function createToggle(yPos, text, callback, state)
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Size = UDim2.new(1, 0, 0, 50)
+    ToggleFrame.Position = UDim2.new(0, 0, 0, yPos)
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    ToggleFrame.Parent = Content
+    local TCorner = Instance.new("UICorner")
+    TCorner.CornerRadius = UDim.new(0, 8)
+    TCorner.Parent = ToggleFrame
+
+    local TLabel = Instance.new("TextLabel")
+    TLabel.Size = UDim2.new(1, -80, 1, 0)
+    TLabel.BackgroundTransparency = 1
+    TLabel.Text = text
+    TLabel.TextColor3 = Color3.new(1, 1, 1)
+    TLabel.Font = Enum.Font.GothamSemibold
+    TLabel.TextSize = 16
+    TLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TLabel.Parent = ToggleFrame
+
+    local ToggleBtn = Instance.new("TextButton")
+    ToggleBtn.Size = UDim2.new(0, 60, 0, 30)
+    ToggleBtn.Position = UDim2.new(1, -70, 0.5, -15)
+    ToggleBtn.Text = state and "ON" or "OFF"
+    ToggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+    ToggleBtn.TextColor3 = Color3.new(1, 1, 1)
+    ToggleBtn.Font = Enum.Font.GothamBold
+    ToggleBtn.TextSize = 14
+    ToggleBtn.Parent = ToggleFrame
+    local BtnCorner = Instance.new("UICorner")
+    BtnCorner.CornerRadius = UDim.new(0, 6)
+    BtnCorner.Parent = ToggleBtn
+
+    ToggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        ToggleBtn.Text = state and "ON" or "OFF"
+        ToggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+        callback(state)
+    end)
+
+    return state
+end
+
+-- Estados
+local noTsunami = false
+local speedEnabled = false
+
+-- Targets tsunami
+local targetNames = {"TsunamiEnd", "TsunamiStart", "FrontendLoader", "Tsunamis", "TypedRemote", "SpawnTsunami"}
+
+local tsunamiConnection
+local function toggleNoTsunami(enabled)
+    noTsunami = enabled
+    if enabled then
+        for _, obj in ipairs(game:GetDescendants()) do
+            if table.find(targetNames, obj.Name) then
+                pcall(obj.Destroy, obj)
+            end
+        end
+        tsunamiConnection = game.DescendantAdded:Connect(function(obj)
+            if table.find(targetNames, obj.Name) then
+                pcall(obj.Destroy, obj)
+            end
+        end)
+    else
+        if tsunamiConnection then tsunamiConnection:Disconnect() end
+    end
+end
+
+local speedConnection
+local function toggleSpeed(enabled)
+    speedEnabled = enabled
+    local char = Player.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = enabled and 350 or 16
+        end
+    end
+    if enabled then
+        speedConnection = RunService.Heartbeat:Connect(function()
+            local char = Player.Character
+            if char and speedEnabled then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then hum.WalkSpeed = 350 end
+            end
+        end)
+    else
+        if speedConnection then speedConnection:Disconnect() end
+    end
+end
+
+-- Toggles
+createToggle(10, "🚫 Eliminar Tsunamis (Todo el juego)", toggleNoTsunami, false)
+createToggle(70, "⚡ Velocidad 350 (Solo caminar)", toggleSpeed, false)
+
+-- Toggle con L
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.L then
+        ScreenGui.Enabled = not ScreenGui.Enabled
+    end
+end)
+
+-- Draggable mejorado (soporte touch/mouse)
+local dragging = false
+local dragInput = nil
+local dragStart = nil
+local startPos = nil
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if dragging and dragInput then
+        local delta = dragInput.Position - dragStart
+        Frame.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Respawn fix
+Player.CharacterAdded:Connect(function()
+    wait(1)
+    if speedEnabled then toggleSpeed(true) end
+    if noTsunami then toggleNoTsunami(true) end
+end)
+
+print("GUI cargada - Arrastra el frame para moverlo donde quieras")
