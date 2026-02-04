@@ -208,7 +208,7 @@ local function toggleSpeed(enabled)
         if speedConnection then speedConnection:Disconnect() end
     end
 end
- 
+
 -- Toggles
 createToggle(10, "🚫 Eliminar Tsunamis (Todo el juego)", toggleNoTsunami, false)
 createToggle(70, "⚡ Velocidad 350 (Solo caminar)", toggleSpeed, false)
@@ -267,3 +267,4 @@ Player.CharacterAdded:Connect(function()
 end)
 
 print("GUI cargada - Arrastra el frame para moverlo donde quieras")
+
