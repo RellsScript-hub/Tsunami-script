@@ -163,7 +163,8 @@ end
 -- Estados
 local noTsunami = false
 local speedEnabled = false
-
+local autoCollect = false
+local collectConnection
 -- Targets tsunami
 local targetNames = {"TsunamiEnd", "TsunamiStart", "FrontendLoader", "Tsunamis", "TypedRemote", "SpawnTsunami"}
 
@@ -208,7 +209,26 @@ local function toggleSpeed(enabled)
         if speedConnection then speedConnection:Disconnect() end
     end
 end
-
+-- Función Auto Collect (recoge cash/money/orbs con ProximityPrompt)
+local function toggleAutoCollect(enabled)
+    autoCollect = enabled
+    if enabled then
+        collectConnection = RunService.Heartbeat:Connect(function()
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("ProximityPrompt") and (obj.Name:lower():find("cash") or obj.Name:lower():find("money") or obj.Name:lower():find("coin") or obj.Name:lower():find("orb")) then
+                    pcall(function()
+                        fireproximityprompt(obj)
+                    end)
+                end
+            end
+        end)
+    else
+        if collectConnection then
+            collectConnection:Disconnect()
+            collectConnection = nil
+        end
+    end
+end
 -- Toggles
 createToggle(10, "🚫 Eliminar Tsunamis (Todo el juego)", toggleNoTsunami, false)
 createToggle(70, "⚡ Velocidad 350 (Solo caminar)", toggleSpeed, false)
