@@ -1,4 +1,4 @@
--- Script GUI para Escapa del Tsunami por Latamrots | Compatible Delta/PC
+h-- Script GUI para Escapa del Tsunami por Latamrots | Compatible Delta/PC
 -- Features: Eliminar Tsunamis FIX (Todo el game), Velocidad 350 (Solo Walk)
 -- By Rells Scripts | Mover libremente (draggable mejorado)
 
@@ -267,4 +267,3 @@ Player.CharacterAdded:Connect(function()
 end)
 
 print("GUI cargada - Arrastra el frame para moverlo donde quieras")
-
